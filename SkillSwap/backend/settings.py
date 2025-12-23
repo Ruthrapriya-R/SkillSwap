@@ -122,3 +122,28 @@ STATIC_URL = 'static/'
 
 # Allow React to talk to Django
 CORS_ALLOW_ALL_ORIGINS = True
+
+import os
+import dj_database_url
+
+# RENDER PRODUCTION SETTINGS
+if 'RENDER' in os.environ:
+    print("👀 RENDER DETECTED: Switching to Production Settings")
+    DEBUG = False
+    ALLOWED_HOSTS = ['*'] # Allow the world to visit
+    
+    # Connect to the Cloud Database (PostgreSQL)
+    DATABASES = {
+        'default': dj_database_url.config(
+            default='sqlite:///db.sqlite3',
+            conn_max_age=600
+        )
+    }
+
+    # Enable WhiteNoise (To serve static files like CSS)
+    MIDDLEWARE.insert(1, 'whitenoise.middleware.WhiteNoiseMiddleware')
+    
+    # Static Files Config
+    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+    
