@@ -3,13 +3,11 @@ import axios from 'axios'
 import './App.css'
 
 function App() {
-  // 1. STATE VARIABLES
   const [profiles, setProfiles] = useState([])
   const [skills, setSkills] = useState([]) 
   const [searchTerm, setSearchTerm] = useState("")
   const [connectedUsers, setConnectedUsers] = useState({})
   
-  // Form State
   const [showForm, setShowForm] = useState(false)
   const [formData, setFormData] = useState({
     username: "",
@@ -19,10 +17,8 @@ function App() {
     skills_wanted: []
   })
 
-  // ⚠️ YOUR NAME (Must match the user you created!)
   const myUsername = "Ruth"; 
 
-  // 2. HELPER FUNCTIONS 🛠️
   
   const fetchData = () => {
     axios.get('http://127.0.0.1:8000/api/profiles/')
@@ -30,13 +26,12 @@ function App() {
       .catch(error => console.error("Error:", error))
   }
 
-  // DELETE FUNCTION (Now correctly inside the App!) 🗑️
   const handleDelete = (username) => {
     if (window.confirm(`Are you sure you want to delete ${username}?`)) {
       axios.delete(`http://127.0.0.1:8000/api/profile/${username}/`)
         .then(() => {
           alert("User Deleted! 🗑️");
-          fetchData(); // Refresh list to remove the card
+          fetchData(); 
         })
         .catch(error => {
           console.error("Delete Failed Details:", error); 
@@ -83,7 +78,6 @@ function App() {
     }
   }
 
-  // 3. USE EFFECT
   useEffect(() => {
     fetchData();
     axios.get('http://127.0.0.1:8000/api/skills/')
@@ -91,15 +85,12 @@ function App() {
       .catch(err => console.error(err))
   }, [])
 
-  // 4. SEARCH & FILTER LOGIC
   const filteredProfiles = profiles.filter(profile => {
-    // Hide Myself 👻
     if (profile.user.username === myUsername) return false;
 
     if (searchTerm === "") return true;
     const lowerSearch = searchTerm.toLowerCase();
     
-    // Safety checks in case data is missing
     const offers = profile.skills_offered || [];
     const wants = profile.skills_wanted || [];
     const loc = profile.location || "";
